@@ -1,1 +1,1 @@
-![](./assets/neuraldaw.gif)
+![](./assets/sc-01.png)
