@@ -36,11 +36,15 @@ button {
     .container .header p {
       color: #3c6e71; }
     @media screen and (max-width: 640px) {
-      .container .header p {
-        display: none; } }
+      .container .header {
+        margin: 2rem 0 1.5rem 0; }
+        .container .header p {
+          display: none; } }
     @media screen and (max-height: 720px) {
-      .container .header p {
-        display: none; } }
+      .container .header {
+        margin: 2rem 0 1.5rem 0; }
+        .container .header p {
+          display: none; } }
   .container .interface {
     height: auto;
     margin: 0 auto;
@@ -111,6 +115,12 @@ button {
     display: flex;
     justify-content: space-evenly;
     flex-wrap: wrap; }
+    @media screen and (max-width: 640px) {
+      .container .control {
+        margin: 0 auto 0 auto; } }
+    @media screen and (max-height: 720px) {
+      .container .control {
+        margin: 0 auto 0 auto; } }
     .container .control p {
       user-select: none;
       text-align: center;
@@ -274,6 +284,14 @@ footer {
   bottom: 1rem; }
   footer p {
     margin: 0; }
+  @media screen and (max-width: 640px) {
+    footer {
+      margin: 4.0rem auto 0 auto;
+      position: relative; } }
+  @media screen and (max-height: 720px) {
+    footer {
+      margin: 4.0rem auto 0 auto;
+      position: relative; } }
 
 
 /*# sourceMappingURL=bundle.css.map*/
