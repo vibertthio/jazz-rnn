@@ -14,6 +14,7 @@ const ctx = tone.context;
 let loading = true;
 let playing = true;
 let dataId = 0;
+let numChordProgression = 0;
 
 const start = () => {
   const playBtn = document.getElementById('play');
@@ -50,9 +51,14 @@ const updateMelodies = (data) => {
 };
 
 const setup = async () => {
+  // get meta
+  const meta = await jr.server.getStaticMeta();
+  console.log('MetaData loaded!');
+  numChordProgression = meta.MetaData.NumChordProgression;
+
   // init jr
   await jr.scores.loadSoundFonts();
-  jr.scores.initParts();
+  await jr.scores.initParts();
   jr.scores.startAll();
   console.log('Soundfonts loaded!');
 
@@ -89,13 +95,17 @@ const setButtonEvents = () => {
   // reload
   document.getElementById('reload').onclick = async () => {
     stop();
+    const playBtn = document.getElementById('play');
+    playBtn.firstChild.textContent = 'loading';
 
-    dataId = (dataId + 1) % fakeData.length;
+    // sequence
+    // dataId = (dataId + 1) % numChordProgression;
 
-    console.log(`[ID]: ${dataId}`);
-    jr.scores.initParts(dataId);
+    // random
+    dataId = Math.floor(Math.random() * numChordProgression);
+    await jr.scores.initParts(dataId);
+
     updateMelodies(jr.parts.data);
-
     start();
   };
 

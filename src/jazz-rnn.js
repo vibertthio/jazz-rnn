@@ -71,7 +71,7 @@ export default class NeuralDAW {
         },
       });
       const data = await response.json();
-      console.log(data);
+      return data;
     };
     const getStaticIntegration = async (id = 0) => {
       const url = this.constants.ServerURL + this.constants.APIS.ALL;
@@ -86,7 +86,7 @@ export default class NeuralDAW {
         }),
       });
       const data = await response.json();
-      console.log(data);
+      return data;
     };
 
     this.server = {
@@ -117,8 +117,10 @@ export default class NeuralDAW {
       });
     };
 
-    const initParts = (id = 0) => {
-      const data = fakeData[id];
+    const initParts = async (id = 0) => {
+      // const data = fakeData[id];
+      const data = await this.server.getStaticIntegration(id);
+      console.log(`data [${id}] loaded!`);
       const bassNotes = dataToNotes(data.ProgressionsData.Bass);
       const bassPart = new Part((time, values) => {
         const { note, duration, vel } = values;

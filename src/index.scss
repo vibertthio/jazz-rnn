@@ -96,7 +96,8 @@ button {
 			// background-color: rgba(0, 0, 0, 0.9);
 			width: 100%;
 			// margin: 1rem 20px;
-			margin: 0 20px 0 20px;
+			// margin: 0 10px 0 10px;
+			margin: 0 10px 0 10px;
 			// height: 95%;
 			border-radius: $border-radius;
 			overflow: hidden;
@@ -108,7 +109,15 @@ button {
 
 		.block-wrapper {
 			display: flex;
-			margin: 1rem 0 1rem 0;
+			margin: 1rem 0.5rem 1rem 0.5rem;
+
+			p {
+				margin-top: 5vh;
+				@include mobile {
+					display: none;
+					margin: 0;
+				}
+			}
 			
 			.button-wrapper {
 				display: flex;
@@ -141,6 +150,7 @@ button {
 		.melodies {
 			margin-top: 2rem;
 			width: 100%;
+			text-align: center;
 
 			.melody {
 				background-color: $block-color;
