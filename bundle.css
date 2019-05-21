@@ -91,15 +91,19 @@ button {
           width: 25px;
           height: 25px; }
     .container .interface #chord-block-wrapper {
-      height: 15vh; }
+      height: 15vh;
+      margin: 1rem 0.5rem 0.2rem 0.5rem; }
     .container .interface #melody-block-wrapper {
-      height: 15vh; }
+      height: 15vh;
+      margin: 0.2rem 0.5rem 1rem 0.5rem; }
     .container .interface #bass-block-wrapper {
       height: 15vh; }
     .container .interface .melodies {
       margin-top: 2rem;
       width: 100%;
       text-align: center; }
+      .container .interface .melodies p {
+        margin: 0 auto; }
       .container .interface .melodies .melody {
         background-color: #353535;
         border-radius: 10px;
