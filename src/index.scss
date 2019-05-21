@@ -76,6 +76,7 @@ button {
     }
 
     @include mobile {
+			margin: 2rem 0 1.5rem 0;
       p {
         display: none;
       }
@@ -137,10 +138,12 @@ button {
 
 		#chord-block-wrapper {
 			height: 15vh;
+			margin: 1rem 0.5rem 0.2rem 0.5rem;
 		}
 
 		#melody-block-wrapper {
 			height: 15vh;
+			margin: 0.2rem 0.5rem 1rem 0.5rem;
 		}
 
 		#bass-block-wrapper {
@@ -151,6 +154,10 @@ button {
 			margin-top: 2rem;
 			width: 100%;
 			text-align: center;
+
+			p {
+				margin: 0 auto;
+			}
 
 			.melody {
 				background-color: $block-color;
@@ -174,6 +181,10 @@ button {
 		display: flex;
 		justify-content: space-evenly;
 		flex-wrap: wrap;
+
+		@include mobile {
+			margin: 0 auto 0 auto;
+		}
 
 		p {
 			user-select: none;
@@ -413,7 +424,12 @@ footer {
   bottom: 1rem;
   p {
     margin: 0;
-  }
+	}
+	
+	@include mobile {
+		margin: 4.0rem auto 0 auto;
+		position: relative;
+	}
 }
 
 
