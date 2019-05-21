@@ -4,14 +4,19 @@
   @media screen and (max-width: 640px) {
     @content;
   }
+  @media screen and (max-height: 720px) {
+    @content;
+  }
 }
 
-$font: 'Muli', sans-serif;
+// $font: 'Muli', sans-serif;
+$font: 'Quicksand', sans-serif;
+
 $pixel-size: 10px;
 $border-radius: 10px;
 $background-color: $color3;
 $block-color: $color1;
-
+$background-opacity: 0.1;
 * {
 	box-sizing: border-box;
 }
@@ -19,13 +24,25 @@ $block-color: $color1;
 html {
 	height: 100%;
 	width: 100%;
+	background: linear-gradient(
+		to right, 
+		rgba(147,206,222,$background-opacity) 0%, 
+		rgba(117,189,209,$background-opacity) 46%, 
+		rgba(73,165,191,$background-opacity) 100%
+	);
+  p {
+    color: $color2;
+    letter-spacing: 0.1rem;
+  }
 }
 
 body {
 	// height: 100%;
 	width: 100%;
-	background-color: $background-color;
-	font-family: $font;
+	// background-color: $background-color;
+	// background-color: rgba(147,206,222,1);
+	
+  font-family: $font;
 }
 
 button {
@@ -35,7 +52,7 @@ button {
 
 	&:hover {
 		opacity: 1.0;
-	}
+  }
 }
 
 .container {
@@ -44,11 +61,24 @@ button {
 
 	.header {
 		width: 100%;
-    	text-align: center;
-		margin: 2rem 0 2rem 0;
+    text-align: center;
+    margin: 2rem 0 2rem 0;
+    
 
 		h1 {
-			margin: 0;
+      margin: 0;
+      color: $color2;
+      letter-spacing: 0.8rem;
+    }
+    
+		p {
+      color: $color2;
+    }
+
+    @include mobile {
+      p {
+        display: none;
+      }
 		}
 	}
 
@@ -96,16 +126,22 @@ button {
 			}
 		}
 
-		#drum-block-wrapper {
-			height: 25vh;
+		#chord-block-wrapper {
+			height: 15vh;
+		}
+
+		#melody-block-wrapper {
+			height: 15vh;
+		}
+
+		#bass-block-wrapper {
+			height: 15vh;
 		}
 
 		.melodies {
 			margin-top: 2rem;
 			width: 100%;
-			.block-wrapper {
-				height: 15vh;
-			}
+
 			.melody {
 				background-color: $block-color;
 				border-radius: $border-radius;
@@ -151,13 +187,15 @@ button {
 
 		input[type=range] {
 			-webkit-appearance: none;
+			background-color: transparent;
 			&::-webkit-slider-runnable-track {
 				// width: 300px;
 				// height: 5px;
 				height: 10px;
 				background: #ddd;
+				// background: none;
 				border: none;
-				border-radius: 3px;
+				border-radius: 5px;
 			}
 			&::-webkit-slider-thumb {
 				-webkit-appearance: none;
@@ -177,14 +215,17 @@ button {
 			}
 			& {
 				/* fix for FF unable to apply focus style bug  */
-				border: 1px solid white;
+				// border: 1px solid white;
+				
+				border: none;
 				/*required for proper track sizing in FF*/
 				// width: 300px;
 			}
 			&::-moz-range-track {
 				// width: 300px;
 				height: 5px;
-				background: #ddd;
+				// background: #ddd;
+				background: none;
 				border: none;
 				border-radius: 3px;
 			}
@@ -198,8 +239,8 @@ button {
 
 			/*hide the outline behind the border*/
 			&:-moz-focusring {
-				outline: 1px solid white;
-				outline-offset: -1px;
+				// outline: 1px solid white;
+				// outline-offset: -1px;
 			}
 			&:focus::-moz-range-track {
 				background: #ccc;
@@ -359,7 +400,10 @@ footer {
 	text-align: center;
 	position: fixed;
 	margin: 0 auto;
-	bottom: 1rem;
+  bottom: 1rem;
+  p {
+    margin: 0;
+  }
 }
 
 

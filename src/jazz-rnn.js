@@ -8,7 +8,9 @@ export default class NeuralDAW {
     this.constants = {};
     this.server = {};
     this.tone = {};
+    this.scores = {};
     this.sounds = {};
+    this.parts = {};
 
     this.initConstants();
     this.initServerConnection();
@@ -115,12 +117,12 @@ export default class NeuralDAW {
       });
     };
 
-    const initParts = () => {
-      const data = fakeData[0];
+    const initParts = (id = 0) => {
+      const data = fakeData[id];
       const bassNotes = dataToNotes(data.ProgressionsData.Bass);
       const bassPart = new Part((time, values) => {
         const { note, duration, vel } = values;
-        this.sounds.bassSound.play(note, time, { gain: vel, duration });
+        this.sounds.bassSound.play(note, time, { gain: vel * this.sounds.volume, duration });
       }, bassNotes);
       bassPart.loop = true;
       bassPart.loopEnd = 16;
@@ -128,7 +130,7 @@ export default class NeuralDAW {
       const melodyNotes = dataToNotes(data.ProgressionsData.Melody);
       const melodyPart = new Part((time, values) => {
         const { note, duration, vel } = values;
-        this.sounds.pianoSound.play(note, time, { gain: vel, duration });
+        this.sounds.pianoSound.play(note, time, { gain: vel * this.sounds.volume, duration });
       }, melodyNotes);
       melodyPart.loop = true;
       melodyPart.loopEnd = 16;
@@ -136,12 +138,13 @@ export default class NeuralDAW {
       const chordNotes = dataToNotes(data.ProgressionsData.Chord);
       const chordPart = new Part((time, values) => {
         const { note, duration, vel } = values;
-        this.sounds.pianoSound.play(note, time, { gain: vel, duration });
+        this.sounds.pianoSound.play(note, time, { gain: vel * this.sounds.volume, duration });
       }, chordNotes);
       chordPart.loop = true;
       chordPart.loopEnd = 16;
 
       this.parts = {
+        data,
         bassPart,
         chordPart,
         melodyPart,
@@ -168,13 +171,15 @@ export default class NeuralDAW {
 
       const bassSound = await Soundfont.instrument(ac, 'acoustic_bass', { soundfont: 'MusyngKite' });
       console.log('Bass sounds loaded!');
+
       this.sounds = {
+        volume: 0.8,
         pianoSound,
         bassSound,
       };
 
-      initParts();
-      startAll();
+      // initParts();
+      // startAll();
     };
 
     const changeScores = (id = 0) => {

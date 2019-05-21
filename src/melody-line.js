@@ -21,12 +21,12 @@ export default class MelodyLine {
     // console.log(m);
   }
 
-  draw(beat) {
+  draw(p = 0) {
     // resize
     this.canvas = document.getElementById(this.id);
     const psize = size(this.canvas);
-    this.canvas.width = psize[0]|0;
-    this.canvas.height = psize[1]|0;
+    this.canvas.width = psize[0] | 0;
+    this.canvas.height = psize[1] | 0;
 
     const borderRadius = 5;
     const canvasWidth = this.canvas.width;
@@ -34,6 +34,8 @@ export default class MelodyLine {
     const width = canvasWidth - borderRadius * 2;
     const height = canvasHeight - borderRadius * 2;
     const ctx = this.canvas.getContext('2d');
+    const totalNotesLength = 220 * 4 * 8;
+    const beat = p * totalNotesLength;
 
 
     ctx.save();
@@ -42,32 +44,34 @@ export default class MelodyLine {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     ctx.translate(borderRadius, borderRadius);
     this.drawAnchorPoints(ctx, width, height, width / 16);
+    this.drawProgress(ctx,width, height, p);
 
     if (!this.loading) {
       ctx.save();
 
-      const step = width / 64;
+      const step = width / totalNotesLength;
       const thickness = height / 64;
 
       for (let note of this.melody) {
-        const { pitch, quantizedStartStep, quantizedEndStep } = note;
-        const noteLength = quantizedEndStep - quantizedStartStep;
+        const { start, end, pitch, velocity } = note;
+        // const { pitch, quantizedStartStep, quantizedEndStep } = note;
+        const noteLength = end - start;
 
         ctx.save();
 
-        ctx.translate(quantizedStartStep * step, (64 - (pitch - 28)) * thickness);
+        ctx.translate(start * step, (64 - (pitch - 28)) * thickness);
         if (!this.waiting) {
           ctx.fillStyle = colors[3];
         } else {
           ctx.fillStyle = colors[5];
         }
-        if (beat >= quantizedStartStep && beat < quantizedEndStep) {
+        if (beat >= start && beat < end) {
           // ctx.fillStyle = colors[2];
           ctx.fillStyle = colors[6];
           ctx.translate(-noteLength * step * 0.1, -2.5);
-          ctx.fillRect(0, 0, noteLength * step * 1.1, 10);
+          ctx.fillRect(0, 0, noteLength * step * 1.1, thickness * 2);
         } else {
-          ctx.fillRect(0, 0, noteLength * step * 0.9, 5);
+          ctx.fillRect(0, 0, noteLength * step * 0.8, thickness);
         }
 
         ctx.restore();
@@ -89,26 +93,44 @@ export default class MelodyLine {
         ctx.fillStyle = colors[5];
         ctx.translate(i * unit, j * unit);
 
+        if (this.hoveringNotes) {
+          ctx.fillStyle = colors[6];
+          const scale = Math.sin(Date.now() * 0.002 - i * 0.1 + j * 0.1) * 3;
+          // ctx.translate(-size * scale * 0.5, -size * scale * 0.5);
+          ctx.beginPath();
+          ctx.arc(0, 0, Math.abs(size * scale * 0.5), 0, Math.PI * 2);
+          ctx.fill();
+          // ctx.fillRect(0, 0, size * scale, size * scale);
 
-        if (this.hoveringSounds) {
-          ctx.fillStyle = colors[6];
-          const d = new Date();
-          ctx.translate(0, Math.sin(d * 0.005 + i * 0.3 + j * 0.3) * ySteps * 0.5);
-          ctx.fillRect(0, 0, size, size);
-        } else if (this.hoveringNotes) {
-          ctx.fillStyle = colors[6];
-          if (Math.random() > 0.98) {
-            ctx.translate(-size * 1.5, -size * 1.5);
-            ctx.fillRect(0, 0, size * 3, size * 3);
-          } else {
-            ctx.fillRect(0, 0, size, size);
-          }
         } else {
           ctx.fillRect(0, 0, size, size);
         }
         ctx.restore();
       }
     }
+    ctx.restore();
+  }
+
+  drawProgress(ctx, w, h, p) {
+    ctx.save();
+    ctx.strokeStyle = colors[6];
+    ctx.fillStyle = colors[6];
+
+    ctx.translate(w * p, 0);
+    ctx.beginPath();
+    ctx.arc(0, 0, h * 0.03, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, h);
+    ctx.stroke();
+
+    ctx.translate(0, h);
+    ctx.beginPath();
+    ctx.arc(0, 0, h * 0.03, 0, Math.PI * 2);
+    ctx.fill();
+
     ctx.restore();
   }
 

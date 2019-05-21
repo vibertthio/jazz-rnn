@@ -10,7 +10,10 @@
   <link rel="icon" type="image/png" sizes="32x32" href="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/198/robot-face_1f916.png">
 
   <!-- fonts -->
-	<link href="https://fonts.googleapis.com/css?family=Muli:400,700" rel="stylesheet">
+	<!-- <link href="https://fonts.googleapis.com/css?family=Muli:400,700" rel="stylesheet"> -->
+  <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500&display=swap" rel="stylesheet">
+
+
 </head>
 <body>
 	<div class="container">
@@ -31,17 +34,17 @@
       </div>
 
 			<div class="melodies">
-        <div class="block-wrapper">
+        <div class="block-wrapper" id="chord-block-wrapper">
           <div class="melody flex-item">
             <canvas id="canvas-1" class="canvas"></canvas>
           </div>
         </div>
-        <div class="block-wrapper">
+        <div class="block-wrapper" id="melody-block-wrapper">
           <div class="melody flex-item">
             <canvas id="canvas-2" class="canvas"></canvas>
           </div>
         </div>
-        <div class="block-wrapper" id="drum-block-wrapper">
+        <div class="block-wrapper" id="bass-block-wrapper">
           <div class="melody flex-item">
             <canvas id="canvas-3" class="canvas"></canvas>
           </div>
@@ -60,7 +63,9 @@
 		</div>
   </div>
   <footer>
-    2019 © Taiwan AI Labs
+    <p>
+      2019 © Taiwan AI Labs
+    </p>
   </footer>
 </body>
 </html>
