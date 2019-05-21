@@ -94,19 +94,34 @@ const setButtonEvents = () => {
 
   // reload
   document.getElementById('reload').onclick = async () => {
-    stop();
-    const playBtn = document.getElementById('play');
-    playBtn.firstChild.textContent = 'loading';
+    if (!loading) {
+      stop();
 
-    // sequence
-    // dataId = (dataId + 1) % numChordProgression;
+      loading = true;
+      chordRenderer.hoveringNotes = true;
+      melodyRenderer.hoveringNotes = true;
+      bassRenderer.hoveringNotes = true;
 
-    // random
-    dataId = Math.floor(Math.random() * numChordProgression);
-    await jr.scores.initParts(dataId);
 
-    updateMelodies(jr.parts.data);
-    start();
+      const playBtn = document.getElementById('play');
+      playBtn.firstChild.textContent = 'loading';
+
+      // sequence
+      // dataId = (dataId + 1) % numChordProgression;
+
+      // random
+      dataId = Math.floor(Math.random() * numChordProgression);
+      await jr.scores.initParts(dataId);
+
+      updateMelodies(jr.parts.data);
+
+      loading = false;
+      chordRenderer.hoveringNotes = false;
+      melodyRenderer.hoveringNotes = false;
+      bassRenderer.hoveringNotes = false;
+
+      start();
+    }
   };
 
   //volume

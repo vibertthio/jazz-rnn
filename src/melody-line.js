@@ -46,7 +46,7 @@ export default class MelodyLine {
     this.drawAnchorPoints(ctx, width, height, width / 16);
     this.drawProgress(ctx,width, height, p);
 
-    if (!this.loading) {
+    if (!this.loading && !this.hoveringNotes) {
       ctx.save();
 
       const step = width / totalNotesLength;
