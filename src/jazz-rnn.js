@@ -100,13 +100,13 @@ export default class NeuralDAW {
     this.tone = Tone;
     const ac = Tone.context;
 
-    const dataToNotes = (data) => {
+    const dataToNotes = (data, octave = 0) => {
       const bpm = 120;
       return data.map(n => {
         const { end, pitch, start, velocity } = n;
         const time = start * ((60 / bpm) / 220);
         const duration = (end - start) * ((60 / bpm) / 220);
-        const note = Tone.Frequency(pitch, 'midi').toNote();
+        const note = Tone.Frequency(pitch + octave * 12, 'midi').toNote();
         const vel = velocity / 128;
         return {
           time,
@@ -121,10 +121,10 @@ export default class NeuralDAW {
       // const data = fakeData[id];
       const data = await this.server.getStaticIntegration(id);
       console.log(`data [${id}] loaded!`);
-      const bassNotes = dataToNotes(data.ProgressionsData.Bass);
+      const bassNotes = dataToNotes(data.ProgressionsData.Bass, -1);
       const bassPart = new Part((time, values) => {
         const { note, duration, vel } = values;
-        this.sounds.bassSound.play(note, time, { gain: vel * this.sounds.volume, duration });
+        this.sounds.bassSound.play(note, time, { gain: vel * this.sounds.volume * this.sounds.mixing.bass, duration });
       }, bassNotes);
       bassPart.loop = true;
       bassPart.loopEnd = 16;
@@ -132,7 +132,7 @@ export default class NeuralDAW {
       const melodyNotes = dataToNotes(data.ProgressionsData.Melody);
       const melodyPart = new Part((time, values) => {
         const { note, duration, vel } = values;
-        this.sounds.pianoSound.play(note, time, { gain: vel * this.sounds.volume, duration });
+        this.sounds.pianoSound.play(note, time, { gain: vel * this.sounds.volume * this.sounds.mixing.piano, duration });
       }, melodyNotes);
       melodyPart.loop = true;
       melodyPart.loopEnd = 16;
@@ -140,7 +140,8 @@ export default class NeuralDAW {
       const chordNotes = dataToNotes(data.ProgressionsData.Chord);
       const chordPart = new Part((time, values) => {
         const { note, duration, vel } = values;
-        this.sounds.pianoSound.play(note, time, { gain: vel * this.sounds.volume, duration });
+        // this.sounds.pianoSound.play(note, time, { gain: vel * this.sounds.volume, duration });
+        this.sounds.compSound.play(note, time, { gain: vel * this.sounds.volume * this.sounds.mixing.comp, duration });
       }, chordNotes);
       chordPart.loop = true;
       chordPart.loopEnd = 16;
@@ -169,14 +170,28 @@ export default class NeuralDAW {
 
     const loadSoundFonts = async () => {
       const pianoSound = await Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite' });
+      // const pianoSound = await Soundfont.instrument(ac, 'acoustic_guitar_nylon', { soundfont: 'MusyngKite' });
       console.log('Piano sounds loaded!');
+
+      // const compSound = await Soundfont.instrument(ac, 'drawbar_organ', { soundfont: 'MusyngKite' });
+      // const compSound = await Soundfont.instrument(ac, 'acoustic_guitar_steel', { soundfont: 'MusyngKite' });
+      const compSound = await Soundfont.instrument(ac, 'electric_piano_1', { soundfont: 'MusyngKite' });
+      console.log('Comp sounds loaded!');
 
       const bassSound = await Soundfont.instrument(ac, 'acoustic_bass', { soundfont: 'MusyngKite' });
       console.log('Bass sounds loaded!');
 
+      const mixing = {
+        comp: 1.0,
+        bass: 0.5,
+        piano: 0.3,
+      };
+
       this.sounds = {
-        volume: 0.8,
+        volume: 3.0,
+        mixing,
         pianoSound,
+        compSound,
         bassSound,
       };
 
