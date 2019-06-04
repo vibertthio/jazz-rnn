@@ -13,8 +13,11 @@ const tone = jr.tone;
 const ctx = tone.context;
 let loading = true;
 let playing = true;
-let dataId = 0;
+let dataId = 4;
+let density = 1;
+let temperature = 1;
 let numChordProgression = 0;
+let single = true;
 
 const start = () => {
   const playBtn = document.getElementById('play');
@@ -44,21 +47,22 @@ const setBpm = (bpm) => {
 };
 
 const updateMelodies = (data) => {
-  const { Bass, Chord, Drums, Melody } = data.ProgressionsData;
-  chordRenderer.updateMelody(Chord);
-  melodyRenderer.updateMelody(Melody);
-  bassRenderer.updateMelody(Bass);
+  const { Bass, Chord, Drums, Melody } = data.Data;
+  chordRenderer.updateMelody(Chord.Notes);
+  melodyRenderer.updateMelody(Melody.Notes);
+  bassRenderer.updateMelody(Bass.Notes);
 };
 
 const setup = async () => {
   // get meta
-  const meta = await jr.server.getStaticMeta();
+  const meta = await jr.server.postVarianceMeta();
   console.log('MetaData loaded!');
+  console.log(`amount: ${meta.MetaData.NumChordProgression}`)
   numChordProgression = meta.MetaData.NumChordProgression;
 
   // init jr
   await jr.scores.loadSoundFonts();
-  await jr.scores.initParts();
+  await jr.scores.initVarianceParts(dataId);
   jr.scores.startAll();
   console.log('Soundfonts loaded!');
 
@@ -102,16 +106,12 @@ const setButtonEvents = () => {
       melodyRenderer.hoveringNotes = true;
       bassRenderer.hoveringNotes = true;
 
-
       const playBtn = document.getElementById('play');
       playBtn.firstChild.textContent = 'loading';
 
-      // sequence
-      // dataId = (dataId + 1) % numChordProgression;
-
       // random
       dataId = Math.floor(Math.random() * numChordProgression);
-      await jr.scores.initParts(dataId);
+      await jr.scores.initVarianceParts(dataId, temperature, density);
 
       updateMelodies(jr.parts.data);
 
@@ -126,7 +126,7 @@ const setButtonEvents = () => {
 
   //volume
   document.getElementById('volume').onchange = (e) => {
-    jr.sounds.volume = e.target.value * 0.01;
+    jr.sounds.changeMasterVolume(e.target.value);
   };
 
   // bpm
@@ -134,12 +134,77 @@ const setButtonEvents = () => {
     setBpm(e.target.value);
   };
 
+  // sliders
+  document.getElementById('s1').onchange = (e) => {
+    const v = e.target.value * 0.01;
+    jr.sounds.sendReverbGain.gain.value = v;
+  };
+
+  document.getElementById('s2').onchange = (e) => {
+    const v = e.target.value * 0.01;
+    jr.sounds.sendReverb.roomSize.value = v;
+  };
+
+  document.getElementById('s3').onchange = async (e) => {
+    if (!loading) {
+      density = e.target.value * 0.01;
+      stop();
+
+      loading = true;
+      chordRenderer.hoveringNotes = true;
+      melodyRenderer.hoveringNotes = true;
+      bassRenderer.hoveringNotes = true;
+
+      const playBtn = document.getElementById('play');
+      playBtn.firstChild.textContent = 'loading';
+
+      await jr.scores.initVarianceParts(dataId, temperature, density);
+
+      updateMelodies(jr.parts.data);
+
+      loading = false;
+      chordRenderer.hoveringNotes = false;
+      melodyRenderer.hoveringNotes = false;
+      bassRenderer.hoveringNotes = false;
+
+      start();
+    }
+  };
+
+  document.getElementById('s4').onchange = async (e) => {
+    if (!loading) {
+      temperature = e.target.value * 0.01;
+      stop();
+
+      loading = true;
+      chordRenderer.hoveringNotes = true;
+      melodyRenderer.hoveringNotes = true;
+      bassRenderer.hoveringNotes = true;
+
+      const playBtn = document.getElementById('play');
+      playBtn.firstChild.textContent = 'loading';
+
+      await jr.scores.initVarianceParts(dataId, temperature, density);
+
+      updateMelodies(jr.parts.data);
+
+      loading = false;
+      chordRenderer.hoveringNotes = false;
+      melodyRenderer.hoveringNotes = false;
+      bassRenderer.hoveringNotes = false;
+
+      start();
+    }
+  };
+
+
+
 };
 
 const draw = () => {
   let p = 0;
-  if (jr.parts.chordPart) {
-    p = jr.parts.chordPart.progress;
+  if (jr.parts.chordsPart) {
+    p = jr.parts.chordsPart.progress;
   }
   chordRenderer.draw(p);
   melodyRenderer.draw(p);

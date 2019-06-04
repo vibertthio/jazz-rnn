@@ -177,7 +177,7 @@ button {
 	.control {
 		// max-width: 400px;
 		height: 3.5vh;
-		margin: 4vh auto 0 auto;
+		margin: 1vh auto 0 auto;
 		display: flex;
 		justify-content: space-evenly;
 		flex-wrap: wrap;
@@ -210,7 +210,7 @@ button {
 			-webkit-appearance: none;
 			background-color: transparent;
 			&::-webkit-slider-runnable-track {
-				// width: 300px;
+				// width: 80px;
 				// height: 5px;
 				height: 10px;
 				background: #ddd;
@@ -240,7 +240,7 @@ button {
 				
 				border: none;
 				/*required for proper track sizing in FF*/
-				// width: 300px;
+				width: 100px;
 			}
 			&::-moz-range-track {
 				// width: 300px;
@@ -427,7 +427,7 @@ footer {
 	}
 	
 	@include mobile {
-		margin: 4.0rem auto 0 auto;
+		margin: 7rem auto 0 auto;
 		position: relative;
 	}
 }
