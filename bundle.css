@@ -28,7 +28,7 @@ button {
   .container .header {
     width: 100%;
     text-align: center;
-    margin: 2rem 0 2rem 0; }
+    margin: 2vh 0 1vh 0; }
     .container .header h1 {
       margin: 0;
       color: #3c6e71;
@@ -99,7 +99,7 @@ button {
     .container .interface #bass-block-wrapper {
       height: 15vh; }
     .container .interface .melodies {
-      margin-top: 2rem;
+      margin-top: 1vh;
       width: 100%;
       text-align: center; }
       .container .interface .melodies p {
@@ -115,7 +115,7 @@ button {
       padding: 0.5rem 1rem; }
   .container .control {
     height: 3.5vh;
-    margin: 4vh auto 0 auto;
+    margin: 1vh auto 0 auto;
     display: flex;
     justify-content: space-evenly;
     flex-wrap: wrap; }
@@ -134,7 +134,7 @@ button {
       border: none;
       background-color: #ff9e74;
       border-radius: 10px;
-      margin-bottom: 1rem;
+      margin-bottom: 0;
       font-size: 1rem;
       width: 4rem;
       max-width: 150px;
@@ -164,7 +164,8 @@ button {
       .container .control input[type=range] {
         /* fix for FF unable to apply focus style bug  */
         border: none;
-        /*required for proper track sizing in FF*/ }
+        /*required for proper track sizing in FF*/
+        width: 120px; }
       .container .control input[type=range]::-moz-range-track {
         height: 5px;
         background: none;
@@ -290,11 +291,11 @@ footer {
     margin: 0; }
   @media screen and (max-width: 640px) {
     footer {
-      margin: 4.0rem auto 0 auto;
+      margin: 7rem auto 0 auto;
       position: relative; } }
   @media screen and (max-height: 720px) {
     footer {
-      margin: 4.0rem auto 0 auto;
+      margin: 7rem auto 0 auto;
       position: relative; } }
 
 
