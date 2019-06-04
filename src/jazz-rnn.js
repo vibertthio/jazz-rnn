@@ -179,7 +179,7 @@ export default class NeuralDAW {
       const bassNotes = dataToNotes(data.ProgressionsData.Bass, 220, -1);
       const bassPart = new Part((time, values) => {
         const { note, duration, vel } = values;
-        this.sounds.bassSound.play(note, time, { gain: vel * this.sounds.mixing.bass, duration });
+        this.sounds.bassSound.play(note, time, { gain: vel, duration });
       }, bassNotes);
       bassPart.loop = true;
       bassPart.loopEnd = 16;
@@ -187,7 +187,7 @@ export default class NeuralDAW {
       const melodyNotes = dataToNotes(data.ProgressionsData.Melody, 220);
       const melodyPart = new Part((time, values) => {
         const { note, duration, vel } = values;
-        this.sounds.melodySound.play(note, time, { gain: vel * this.sounds.mixing.melody, duration });
+        this.sounds.melodySound.play(note, time, { gain: vel, duration });
       }, melodyNotes);
       melodyPart.loop = true;
       melodyPart.loopEnd = 16;
@@ -195,7 +195,7 @@ export default class NeuralDAW {
       const chordsNotes = dataToNotes(data.ProgressionsData.Chord, 220);
       const chordsPart = new Part((time, values) => {
         const { note, duration, vel } = values;
-        this.sounds.chordsSound.play(note, time, { gain: vel * this.sounds.mixing.chords, duration });
+        this.sounds.chordsSound.play(note, time, { gain: vel, duration });
       }, chordsNotes);
       chordsPart.loop = true;
       chordsPart.loopEnd = 16;
@@ -219,7 +219,7 @@ export default class NeuralDAW {
       );
       const bassPart = new Part((time, values) => {
         const { note, duration, vel } = values;
-        this.sounds.bassSound.play(note, time, { gain: vel * this.sounds.mixing.bass, duration });
+        this.sounds.bassSound.play(note, time, { gain: vel, duration });
       }, bassNotes);
       bassPart.loop = true;
       bassPart.loopEnd = 16;
@@ -230,7 +230,7 @@ export default class NeuralDAW {
       );
       const melodyPart = new Part((time, values) => {
         const { note, duration, vel } = values;
-        this.sounds.melodySound.play(note, time, { gain: vel * this.sounds.mixing.melody, duration });
+        this.sounds.melodySound.play(note, time, { gain: vel, duration });
       }, melodyNotes);
       melodyPart.loop = true;
       melodyPart.loopEnd = 16;
@@ -241,7 +241,7 @@ export default class NeuralDAW {
       );
       const chordsPart = new Part((time, values) => {
         const { note, duration, vel } = values;
-        this.sounds.chordsSound.play(note, time, { gain: vel * this.sounds.mixing.chords, duration });
+        this.sounds.chordsSound.play(note, time, { gain: vel, duration });
       }, chordsNotes);
       chordsPart.loop = true;
       chordsPart.loopEnd = 16;
@@ -270,7 +270,7 @@ export default class NeuralDAW {
         .concat(dataToNotes(data3.Data.Bass.Notes, data.Data.Bass.BeatResolutions, -1, 2));
       const bassPart = new Part((time, values) => {
         const { note, duration, vel } = values;
-        this.sounds.bassSound.play(note, time, { gain: vel * this.sounds.mixing.bass, duration });
+        this.sounds.bassSound.play(note, time, { gain: vel, duration });
       }, bassNotes);
       bassPart.loop = true;
       bassPart.loopEnd = 48;
@@ -280,7 +280,7 @@ export default class NeuralDAW {
         .concat(dataToNotes(data3.Data.Melody.Notes, data.Data.Melody.BeatResolutions, 0, 2));
       const melodyPart = new Part((time, values) => {
         const { note, duration, vel } = values;
-        this.sounds.melodySound.play(note, time, { gain: vel * this.sounds.mixing.melody, duration });
+        this.sounds.melodySound.play(note, time, { gain: vel, duration });
       }, melodyNotes);
       melodyPart.loop = true;
       melodyPart.loopEnd = 48;
@@ -290,7 +290,7 @@ export default class NeuralDAW {
         .concat(dataToNotes(data3.Data.Chord.Notes, data.Data.Chord.BeatResolutions, 0, 2));
       const chordsPart = new Part((time, values) => {
         const { note, duration, vel } = values;
-        this.sounds.chordsSound.play(note, time, { gain: vel * this.sounds.mixing.chords, duration });
+        this.sounds.chordsSound.play(note, time, { gain: vel, duration });
       }, chordsNotes);
       chordsPart.loop = true;
       chordsPart.loopEnd = 48;
@@ -309,9 +309,13 @@ export default class NeuralDAW {
     };
 
     const stopAll = () => {
-      this.parts.bassPart.stop();
-      this.parts.melodyPart.stop();
       this.parts.chordsPart.stop();
+      this.parts.melodyPart.stop();
+      this.parts.bassPart.stop();
+
+      this.sounds.chordsSound.stop();
+      this.sounds.melodySound.stop();
+      this.sounds.bassSound.stop();
     };
 
     const startAll = () => {
@@ -326,6 +330,7 @@ export default class NeuralDAW {
       const sendReverb = new Tone.Freeverb(0.7, 1000); // Tone.JCReverb();
 
       const melodyEQ = new Tone.EQ3(0, -5, 0);
+      const melodyGain = new Tone.Gain(0.6);
       const melodySound = await Soundfont.instrument(
         ac,
         'acoustic_grand_piano',
@@ -336,11 +341,12 @@ export default class NeuralDAW {
         },
       );
 
-      melodyEQ.chain(sendReverb, sendReverbGain, Master);
-      melodyEQ.connect(Master);
+      melodyEQ.chain(melodyGain, sendReverb, sendReverbGain, Master);
+      melodyEQ.chain(melodyGain, Master);
       console.log('Melody sounds loaded!');
 
       const chordsEQ = new Tone.EQ3(-10, -2, -5);
+      const chordsGain = new Tone.Gain(1.0);
       const chordsSound = await Soundfont.instrument(
         ac,
         'electric_piano_1',
@@ -350,11 +356,12 @@ export default class NeuralDAW {
         },
       );
 
-      chordsEQ.chain(sendReverb, sendReverbGain, Master);
-      chordsEQ.connect(Master);
+      chordsEQ.chain(chordsGain, sendReverb, sendReverbGain, Master);
+      chordsEQ.chain(chordsGain, Master);
       console.log('Chords sounds loaded!');
 
       const bassEQ = new Tone.EQ3(0, 0, 0);
+      const bassGain = new Tone.Gain(0.4);
       const bassSound = await Soundfont.instrument(
         ac,
         'acoustic_bass',
@@ -364,17 +371,8 @@ export default class NeuralDAW {
         },
       );
 
-      bassEQ.connect(Master);
+      bassEQ.chain(bassGain, Master);
       console.log('Bass sounds loaded!');
-
-      const mixing = {
-        // chords: 0,
-        // bass: 0,
-        // melody: 1.0,
-        chords: 1.0,
-        bass: 0.4,
-        melody: 0.6,
-      };
 
       const changeMasterVolume = v => {
         this.sounds.volume = v * 0.01;
@@ -384,13 +382,15 @@ export default class NeuralDAW {
 
       this.sounds = {
         volume: 1.0,
-        mixing,
         sendReverb,
         sendReverbGain,
         changeMasterVolume,
         melodySound,
+        melodyGain,
         chordsSound,
+        chordsGain,
         bassSound,
+        bassGain,
       };
 
       // initParts();

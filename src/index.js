@@ -238,6 +238,17 @@ const setButtonEvents = () => {
     }
   };
 
+  document.getElementById('s5').onchange = async (e) => {
+    // piano gain
+    const v = e.target.value * 0.01;
+    jr.sounds.melodyGain.gain.value = v;
+  };
+
+  document.getElementById('s6').onchange = async (e) => {
+    // chords gain
+    const v = e.target.value * 0.01;
+    jr.sounds.chordsGain.gain.value = v;
+  };
 
 
 };
