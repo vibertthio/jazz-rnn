@@ -154,11 +154,11 @@ export default class NeuralDAW {
     this.tone = Tone;
     const ac = Tone.context;
 
-    const dataToNotes = (data, beatResolution = 220, octave = 0) => {
+    const dataToNotes = (data, beatResolution = 220, octave = 0, shift = 0) => {
       const bpm = 120;
       return data.map(n => {
         const { end, pitch, start, velocity } = n;
-        const time = start * ((60 / bpm) / beatResolution);
+        const time = (start + beatResolution * 4 * 8 * shift) * ((60 / bpm) / beatResolution);
         const duration = (end - start) * ((60 / bpm) / beatResolution);
         const note = Tone.Frequency(pitch + octave * 12, 'midi').toNote();
         const vel = velocity / 128;
@@ -209,7 +209,7 @@ export default class NeuralDAW {
     };
 
     const initVarianceParts = async (id = 0, temp = 1, dense = 1) => {
-      console.log(`[ id: ${id}, dense: ${dense}, temp: ${temp} ] loaded!`);
+      console.log(`Data loaded: single [ id: ${id}, dense: ${dense}, temp: ${temp} ]`);
       const data = await this.server.postVarianceIntegration(id, temp, dense);
       // console.log(data);
       const bassNotes = dataToNotes(
@@ -248,6 +248,60 @@ export default class NeuralDAW {
 
       this.parts = {
         data,
+        bassPart,
+        chordsPart,
+        melodyPart,
+      };
+    };
+
+    const initVarianceProgression = async (id = 0, temp = 1, dense = 1, progressionLength = 3) => {
+
+      // TODO: adjustable length
+
+      const data = await this.server.postVarianceIntegration(id, temp, dense);
+      console.log(`Data loaded: progression (1/3) [ id: ${id}, dense: ${dense}, temp: ${temp} ]`);
+      const data2 = await this.server.postVarianceIntegration(id, temp, dense + 0.75);
+      console.log(`Data loaded: progression (2/3) [ id: ${id}, dense: ${dense + 0.75}, temp: ${temp} ]`);
+      const data3 = await this.server.postVarianceIntegration(id, temp, dense - 0.25);
+      console.log(`Data loaded: progression (3/3) [ id: ${id}, dense: ${dense - 0.25}, temp: ${temp} ]`);
+      // console.log(data);
+      const bassNotes = dataToNotes(data.Data.Bass.Notes, data.Data.Bass.BeatResolutions, -1)
+        .concat(dataToNotes(data2.Data.Bass.Notes, data.Data.Bass.BeatResolutions, -1, 1))
+        .concat(dataToNotes(data3.Data.Bass.Notes, data.Data.Bass.BeatResolutions, -1, 2));
+      const bassPart = new Part((time, values) => {
+        const { note, duration, vel } = values;
+        this.sounds.bassSound.play(note, time, { gain: vel * this.sounds.mixing.bass, duration });
+      }, bassNotes);
+      bassPart.loop = true;
+      bassPart.loopEnd = 48;
+
+      const melodyNotes = dataToNotes(data.Data.Melody.Notes, data.Data.Melody.BeatResolutions)
+        .concat(dataToNotes(data2.Data.Melody.Notes, data.Data.Melody.BeatResolutions, 0, 1))
+        .concat(dataToNotes(data3.Data.Melody.Notes, data.Data.Melody.BeatResolutions, 0, 2));
+      const melodyPart = new Part((time, values) => {
+        const { note, duration, vel } = values;
+        this.sounds.melodySound.play(note, time, { gain: vel * this.sounds.mixing.melody, duration });
+      }, melodyNotes);
+      melodyPart.loop = true;
+      melodyPart.loopEnd = 48;
+
+      const chordsNotes = dataToNotes(data.Data.Chord.Notes, data.Data.Chord.BeatResolutions)
+        .concat(dataToNotes(data2.Data.Chord.Notes, data.Data.Chord.BeatResolutions, 0, 1))
+        .concat(dataToNotes(data3.Data.Chord.Notes, data.Data.Chord.BeatResolutions, 0, 2));
+      const chordsPart = new Part((time, values) => {
+        const { note, duration, vel } = values;
+        this.sounds.chordsSound.play(note, time, { gain: vel * this.sounds.mixing.chords, duration });
+      }, chordsNotes);
+      chordsPart.loop = true;
+      chordsPart.loopEnd = 48;
+
+      this.parts = {
+        data,
+        datas: [
+          data,
+          data2,
+          data3,
+        ],
         bassPart,
         chordsPart,
         melodyPart,
@@ -350,6 +404,7 @@ export default class NeuralDAW {
     this.scores = {
       initParts,
       initVarianceParts,
+      initVarianceProgression,
       loadSoundFonts,
       stopAll,
       startAll,
