@@ -62,7 +62,7 @@ button {
 	.header {
 		width: 100%;
     text-align: center;
-    margin: 2rem 0 2rem 0;
+    margin: 2vh 0 1vh 0;
     
 
 		h1 {
@@ -151,7 +151,7 @@ button {
 		}
 
 		.melodies {
-			margin-top: 2rem;
+			margin-top: 1vh;
 			width: 100%;
 			text-align: center;
 
@@ -198,7 +198,7 @@ button {
 			border: none;
 			background-color: $color7;
 			border-radius: $pixel-size;
-			margin-bottom: 1rem;
+			margin-bottom: 0;
 			font-size: 1rem;
 			width: 4rem;
 			max-width: 150px;
