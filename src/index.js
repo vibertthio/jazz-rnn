@@ -49,7 +49,7 @@ const setBpm = (bpm) => {
 };
 
 const updateMelodies = (data) => {
-  const { Bass, Chord, Drums, Melody } = data.Data;
+  const { Bass, Chord, Drums, Melody } = data.Data[0];
   chordRenderer.updateMelody(Chord.Notes);
   melodyRenderer.updateMelody(Melody.Notes);
   bassRenderer.updateMelody(Bass.Notes);

@@ -18,15 +18,16 @@ export default class NeuralDAW {
   }
 
   initConstants() {
-    const ServerURL = 'https://developer.ailabs.tw/ai-music-performancernn-demo/api/';
+    // const ServerURL = 'https://developer.ailabs.tw/ai-music-performancernn-demo/api/';
+    const ServerURL = 'http://140.113.225.164:5000/api/';
 
     const APIS = {
       META: 'getStaticMeta',
       CHRD: 'getStaticChordProgression',
       ALL: 'getStaticIntegration',
-      V_META: 'postVarianceMeta',
+      V_META: 'getDynamicMeta',
       V_CHRD: 'postVarianceChordProgression',
-      V_ALL: 'postVarianceIntegration',
+      V_ALL: 'postDynamicIntegration',
     };
 
     const Instruments = {
@@ -130,9 +131,22 @@ export default class NeuralDAW {
           'content-type': 'application/json'
         },
         body: JSON.stringify({
+          // ChordIdx: id,
+          // Temperature: temp,
+          // NoteDensity: density,
+
           ChordIdx: id,
-          Temperature: temp,
-          NoteDensity: density,
+          NumberOfSample: 5,
+
+          MelodyNoteDensityPreset: 'constant',
+          MelodyNoteDensityValue: density,
+          MelodyTemperature: temp,
+
+          BassNoteDensityPreset: 'constant',
+          BassNoteDensityValue: density,
+          BassTemperature: temp,
+
+          UseDrumFillIn: false,
         }),
       });
       const data = await response.json();
@@ -211,10 +225,10 @@ export default class NeuralDAW {
     const initVarianceParts = async (id = 0, temp = 1, dense = 1) => {
       console.log(`Data loaded: single [ id: ${id}, dense: ${dense}, temp: ${temp} ]`);
       const data = await this.server.postVarianceIntegration(id, temp, dense);
-      // console.log(data);
+      console.log(data);
       const bassNotes = dataToNotes(
-        data.Data.Bass.Notes,
-        data.Data.Bass.BeatResolutions,
+        data.Data[0].Bass.Notes,
+        data.Data[0].Bass.BeatResolutions,
         -1
       );
       const bassPart = new Part((time, values) => {
@@ -225,8 +239,8 @@ export default class NeuralDAW {
       bassPart.loopEnd = 16;
 
       const melodyNotes = dataToNotes(
-        data.Data.Melody.Notes,
-        data.Data.Melody.BeatResolutions,
+        data.Data[0].Melody.Notes,
+        data.Data[0].Melody.BeatResolutions,
       );
       const melodyPart = new Part((time, values) => {
         const { note, duration, vel } = values;
@@ -236,8 +250,8 @@ export default class NeuralDAW {
       melodyPart.loopEnd = 16;
 
       const chordsNotes = dataToNotes(
-        data.Data.Chord.Notes,
-        data.Data.Chord.BeatResolutions,
+        data.Data[0].Chord.Notes,
+        data.Data[0].Chord.BeatResolutions,
       );
       const chordsPart = new Part((time, values) => {
         const { note, duration, vel } = values;
@@ -265,9 +279,9 @@ export default class NeuralDAW {
       const data3 = await this.server.postVarianceIntegration(id, temp, dense - 0.25);
       console.log(`Data loaded: progression (3/3) [ id: ${id}, dense: ${dense - 0.25}, temp: ${temp} ]`);
       // console.log(data);
-      const bassNotes = dataToNotes(data.Data.Bass.Notes, data.Data.Bass.BeatResolutions, -1)
-        .concat(dataToNotes(data2.Data.Bass.Notes, data.Data.Bass.BeatResolutions, -1, 1))
-        .concat(dataToNotes(data3.Data.Bass.Notes, data.Data.Bass.BeatResolutions, -1, 2));
+      const bassNotes = dataToNotes(data.Data[0].Bass.Notes, data.Data[0].Bass.BeatResolutions, -1)
+        .concat(dataToNotes(data2.Data[0].Bass.Notes, data.Data[0].Bass.BeatResolutions, -1, 1))
+        .concat(dataToNotes(data3.Data[0].Bass.Notes, data.Data[0].Bass.BeatResolutions, -1, 2));
       const bassPart = new Part((time, values) => {
         const { note, duration, vel } = values;
         this.sounds.bassSound.play(note, time, { gain: vel, duration });
@@ -275,9 +289,9 @@ export default class NeuralDAW {
       bassPart.loop = true;
       bassPart.loopEnd = 48;
 
-      const melodyNotes = dataToNotes(data.Data.Melody.Notes, data.Data.Melody.BeatResolutions)
-        .concat(dataToNotes(data2.Data.Melody.Notes, data.Data.Melody.BeatResolutions, 0, 1))
-        .concat(dataToNotes(data3.Data.Melody.Notes, data.Data.Melody.BeatResolutions, 0, 2));
+      const melodyNotes = dataToNotes(data.Data[0].Melody.Notes, data.Data[0].Melody.BeatResolutions)
+        .concat(dataToNotes(data2.Data[0].Melody.Notes, data.Data[0].Melody.BeatResolutions, 0, 1))
+        .concat(dataToNotes(data3.Data[0].Melody.Notes, data.Data[0].Melody.BeatResolutions, 0, 2));
       const melodyPart = new Part((time, values) => {
         const { note, duration, vel } = values;
         this.sounds.melodySound.play(note, time, { gain: vel, duration });
@@ -285,9 +299,9 @@ export default class NeuralDAW {
       melodyPart.loop = true;
       melodyPart.loopEnd = 48;
 
-      const chordsNotes = dataToNotes(data.Data.Chord.Notes, data.Data.Chord.BeatResolutions)
-        .concat(dataToNotes(data2.Data.Chord.Notes, data.Data.Chord.BeatResolutions, 0, 1))
-        .concat(dataToNotes(data3.Data.Chord.Notes, data.Data.Chord.BeatResolutions, 0, 2));
+      const chordsNotes = dataToNotes(data.Data[0].Chord.Notes, data.Data[0].Chord.BeatResolutions)
+        .concat(dataToNotes(data2.Data[0].Chord.Notes, data.Data[0].Chord.BeatResolutions, 0, 1))
+        .concat(dataToNotes(data3.Data[0].Chord.Notes, data.Data[0].Chord.BeatResolutions, 0, 2));
       const chordsPart = new Part((time, values) => {
         const { note, duration, vel } = values;
         this.sounds.chordsSound.play(note, time, { gain: vel, duration });
