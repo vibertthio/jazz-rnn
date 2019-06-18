@@ -136,7 +136,7 @@ export default class NeuralDAW {
           // NoteDensity: density,
 
           ChordIdx: id,
-          NumberOfSample: 5,
+          NumberOfSample: 10,
 
           MelodyNoteDensityPreset: 'constant',
           MelodyNoteDensityValue: density,
@@ -222,13 +222,16 @@ export default class NeuralDAW {
       };
     };
 
-    const initVarianceParts = async (id = 0, temp = 1, dense = 1) => {
-      console.log(`Data loaded: single [ id: ${id}, dense: ${dense}, temp: ${temp} ]`);
-      const data = await this.server.postVarianceIntegration(id, temp, dense);
-      console.log(data);
+    const initVarianceParts = async (id = 0, temp = 1, dense = 1, melodyId = 0) => {
+      console.log('Data start loading...');
+      const response = await this.server.postVarianceIntegration(id, temp, dense);
+      console.log(`Data loaded: single [ id: ${id}, melodyId: ${melodyId}, dense: ${dense}, temp: ${temp} ]`);
+
+      // console.log(response);
+      const data = response.Data[melodyId];
       const bassNotes = dataToNotes(
-        data.Data[0].Bass.Notes,
-        data.Data[0].Bass.BeatResolutions,
+        data.Bass.Notes,
+        data.Bass.BeatResolutions,
         -1
       );
       const bassPart = new Part((time, values) => {
@@ -239,8 +242,8 @@ export default class NeuralDAW {
       bassPart.loopEnd = 16;
 
       const melodyNotes = dataToNotes(
-        data.Data[0].Melody.Notes,
-        data.Data[0].Melody.BeatResolutions,
+        data.Melody.Notes,
+        data.Melody.BeatResolutions,
       );
       const melodyPart = new Part((time, values) => {
         const { note, duration, vel } = values;
@@ -250,8 +253,8 @@ export default class NeuralDAW {
       melodyPart.loopEnd = 16;
 
       const chordsNotes = dataToNotes(
-        data.Data[0].Chord.Notes,
-        data.Data[0].Chord.BeatResolutions,
+        data.Chord.Notes,
+        data.Chord.BeatResolutions,
       );
       const chordsPart = new Part((time, values) => {
         const { note, duration, vel } = values;
@@ -261,6 +264,53 @@ export default class NeuralDAW {
       chordsPart.loopEnd = 16;
 
       this.parts = {
+        response,
+        data,
+        bassPart,
+        chordsPart,
+        melodyPart,
+      };
+    };
+
+    const changeMelodyId = (melodyId = 0) => {
+      const response = this.parts.response;
+      const data = response.Data[melodyId];
+      const bassNotes = dataToNotes(
+        data.Bass.Notes,
+        data.Bass.BeatResolutions,
+        -1
+      );
+      const bassPart = new Part((time, values) => {
+        const { note, duration, vel } = values;
+        this.sounds.bassSound.play(note, time, { gain: vel, duration });
+      }, bassNotes);
+      bassPart.loop = true;
+      bassPart.loopEnd = 16;
+
+      const melodyNotes = dataToNotes(
+        data.Melody.Notes,
+        data.Melody.BeatResolutions,
+      );
+      const melodyPart = new Part((time, values) => {
+        const { note, duration, vel } = values;
+        this.sounds.melodySound.play(note, time, { gain: vel, duration });
+      }, melodyNotes);
+      melodyPart.loop = true;
+      melodyPart.loopEnd = 16;
+
+      const chordsNotes = dataToNotes(
+        data.Chord.Notes,
+        data.Chord.BeatResolutions,
+      );
+      const chordsPart = new Part((time, values) => {
+        const { note, duration, vel } = values;
+        this.sounds.chordsSound.play(note, time, { gain: vel, duration });
+      }, chordsNotes);
+      chordsPart.loop = true;
+      chordsPart.loopEnd = 16;
+
+      this.parts = {
+        response,
         data,
         bassPart,
         chordsPart,
@@ -419,6 +469,7 @@ export default class NeuralDAW {
       initParts,
       initVarianceParts,
       initVarianceProgression,
+      changeMelodyId,
       loadSoundFonts,
       stopAll,
       startAll,

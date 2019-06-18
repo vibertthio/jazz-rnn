@@ -187,6 +187,14 @@ button {
 			margin: 0 auto 0 auto;
 		}
 
+		#dense {
+			position: relative;
+			top: -0.5rem;
+			input[type=range] {
+				width: 100px;
+			}
+		}
+
 		p {
 			user-select: none;
 			text-align: center;
@@ -200,9 +208,9 @@ button {
 			background-color: $color7;
 			border-radius: $pixel-size;
 			margin-bottom: 0;
-			font-size: 1rem;
-			width: 4rem;
-			max-width: 150px;
+			font-size: 0.9rem;
+			width: 5rem;
+			max-width: 200px;
 			height: $pixel-size * 3;
 		}
 
@@ -234,7 +242,8 @@ button {
 				outline: none;
 			}
 			&:focus::-webkit-slider-runnable-track {
-				background: #ccc;
+				// background: #ccc;
+				background: $color2;
 			}
 			& {
 				/* fix for FF unable to apply focus style bug  */

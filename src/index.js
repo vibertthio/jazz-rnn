@@ -14,6 +14,7 @@ const ctx = tone.context;
 let loading = true;
 let playing = true;
 let dataId = 4;
+let melodyId = 0;
 let density = 1;
 let temperature = 1;
 let numChordProgression = 0;
@@ -49,7 +50,7 @@ const setBpm = (bpm) => {
 };
 
 const updateMelodies = (data) => {
-  const { Bass, Chord, Drums, Melody } = data.Data[0];
+  const { Bass, Chord, Drums, Melody } = data;
   chordRenderer.updateMelody(Chord.Notes);
   melodyRenderer.updateMelody(Melody.Notes);
   bassRenderer.updateMelody(Bass.Notes);
@@ -112,12 +113,12 @@ const setButtonEvents = () => {
       const playBtn = document.getElementById('play');
       playBtn.firstChild.textContent = 'loading';
 
-      const longBtn = document.getElementById('long');
-      longBtn.firstChild.textContent = 'long';
+      // const longBtn = document.getElementById('long');
+      // longBtn.firstChild.textContent = 'long';
 
       // random
       dataId = Math.floor(Math.random() * numChordProgression);
-      await jr.scores.initVarianceParts(dataId, temperature, density);
+      await jr.scores.initVarianceParts(dataId, temperature, density, melodyId);
 
       updateMelodies(jr.parts.data);
 
@@ -137,7 +138,7 @@ const setButtonEvents = () => {
         if (playing) {
           jr.scores.stopAll();
         }
-        single = false;
+        // single = false;
 
         loading = true;
         chordRenderer.hoveringNotes = true;
@@ -147,11 +148,13 @@ const setButtonEvents = () => {
         const playBtn = document.getElementById('play');
         playBtn.firstChild.textContent = 'loading';
 
-        const longBtn = document.getElementById('long');
-        longBtn.firstChild.textContent = '1/3';
+        // const longBtn = document.getElementById('long');
+        // longBtn.firstChild.textContent = '1/3';
 
-
-        await jr.scores.initVarianceProgression(dataId, temperature, density);
+        melodyId = Math.floor(Math.random() * 10);
+        console.log(`new melody id: ${melodyId}`);
+        // await jr.scores.initVarianceParts(dataId, temperature, density, melodyId);
+        await jr.scores.changeMelodyId(melodyId);
 
         updateMelodies(jr.parts.data);
 
@@ -164,6 +167,39 @@ const setButtonEvents = () => {
       }
     }
   };
+  // document.getElementById('long').onclick = async () => {
+  //   if (!loading) {
+  //     if (single) {
+  //       if (playing) {
+  //         jr.scores.stopAll();
+  //       }
+  //       single = false;
+
+  //       loading = true;
+  //       chordRenderer.hoveringNotes = true;
+  //       melodyRenderer.hoveringNotes = true;
+  //       bassRenderer.hoveringNotes = true;
+
+  //       const playBtn = document.getElementById('play');
+  //       playBtn.firstChild.textContent = 'loading';
+
+  //       const longBtn = document.getElementById('long');
+  //       longBtn.firstChild.textContent = '1/3';
+
+
+  //       await jr.scores.initVarianceProgression(dataId, temperature, density);
+
+  //       updateMelodies(jr.parts.data);
+
+  //       loading = false;
+  //       chordRenderer.hoveringNotes = false;
+  //       melodyRenderer.hoveringNotes = false;
+  //       bassRenderer.hoveringNotes = false;
+
+  //       start();
+  //     }
+  //   }
+  // };
 
   //volume
   document.getElementById('volume').onchange = (e) => {
@@ -212,31 +248,31 @@ const setButtonEvents = () => {
     }
   };
 
-  document.getElementById('s4').onchange = async (e) => {
-    if (!loading) {
-      temperature = e.target.value * 0.01;
-      stop();
+  // document.getElementById('s4').onchange = async (e) => {
+  //   if (!loading) {
+  //     temperature = e.target.value * 0.01;
+  //     stop();
 
-      loading = true;
-      chordRenderer.hoveringNotes = true;
-      melodyRenderer.hoveringNotes = true;
-      bassRenderer.hoveringNotes = true;
+  //     loading = true;
+  //     chordRenderer.hoveringNotes = true;
+  //     melodyRenderer.hoveringNotes = true;
+  //     bassRenderer.hoveringNotes = true;
 
-      const playBtn = document.getElementById('play');
-      playBtn.firstChild.textContent = 'loading';
+  //     const playBtn = document.getElementById('play');
+  //     playBtn.firstChild.textContent = 'loading';
 
-      await jr.scores.initVarianceParts(dataId, temperature, density);
+  //     await jr.scores.initVarianceParts(dataId, temperature, density);
 
-      updateMelodies(jr.parts.data);
+  //     updateMelodies(jr.parts.data);
 
-      loading = false;
-      chordRenderer.hoveringNotes = false;
-      melodyRenderer.hoveringNotes = false;
-      bassRenderer.hoveringNotes = false;
+  //     loading = false;
+  //     chordRenderer.hoveringNotes = false;
+  //     melodyRenderer.hoveringNotes = false;
+  //     bassRenderer.hoveringNotes = false;
 
-      start();
-    }
-  };
+  //     start();
+  //   }
+  // };
 
   document.getElementById('s5').onchange = async (e) => {
     // piano gain
