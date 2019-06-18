@@ -7,7 +7,7 @@
 html {
   height: 100%;
   width: 100%;
-  background: linear-gradient(to right, rgba(147, 206, 222, 0.1) 0%, rgba(117, 189, 209, 0.1) 46%, rgba(73, 165, 191, 0.1) 100%); }
+  background: #282828; }
   html p {
     color: #3c6e71;
     letter-spacing: 0.1rem; }
@@ -125,19 +125,24 @@ button {
     @media screen and (max-height: 720px) {
       .container .control {
         margin: 0 auto 0 auto; } }
+    .container .control #dense {
+      position: relative;
+      top: -0.5rem; }
+      .container .control #dense input[type=range] {
+        width: 100px; }
     .container .control p {
       user-select: none;
       text-align: center;
       margin: 0 auto; }
     .container .control button {
-      color: white;
+      color: #353535;
       border: none;
       background-color: #ff9e74;
       border-radius: 10px;
       margin-bottom: 0;
-      font-size: 1rem;
-      width: 4rem;
-      max-width: 150px;
+      font-size: 0.9rem;
+      width: 5rem;
+      max-width: 200px;
       height: 30px; }
     .container .control input[type=range] {
       -webkit-appearance: none;
@@ -146,7 +151,7 @@ button {
       /* for ie */ }
       .container .control input[type=range]::-webkit-slider-runnable-track {
         height: 10px;
-        background: #ddd;
+        background: #353535;
         border: none;
         border-radius: 5px; }
       .container .control input[type=range]::-webkit-slider-thumb {
@@ -160,7 +165,7 @@ button {
       .container .control input[type=range]:focus {
         outline: none; }
       .container .control input[type=range]:focus::-webkit-slider-runnable-track {
-        background: #ccc; }
+        background: #3c6e71; }
       .container .control input[type=range] {
         /* fix for FF unable to apply focus style bug  */
         border: none;
