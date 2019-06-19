@@ -18,16 +18,16 @@ export default class NeuralDAW {
   }
 
   initConstants() {
-    // const ServerURL = 'https://developer.ailabs.tw/ai-music-performancernn-demo/api/';
-    const ServerURL = 'http://140.113.225.164:5000/api/';
+    const ServerURL = 'https://developer.ailabs.tw/ai-music-jazzrnn-demo/api/';
+    // const ServerURL = 'http://140.113.225.164:5000/api/';
 
     const APIS = {
       META: 'getStaticMeta',
       CHRD: 'getStaticChordProgression',
       ALL: 'getStaticIntegration',
-      V_META: 'getDynamicMeta',
+      V_META: 'getMetaData',
       V_CHRD: 'postVarianceChordProgression',
-      V_ALL: 'postDynamicIntegration',
+      V_ALL: 'postIntegration',
     };
 
     const Instruments = {
@@ -131,22 +131,12 @@ export default class NeuralDAW {
           'content-type': 'application/json'
         },
         body: JSON.stringify({
-          // ChordIdx: id,
-          // Temperature: temp,
-          // NoteDensity: density,
-
-          ChordIdx: id,
+          ChordIndex: id,
+          DrumsIndex: 0,
           NumberOfSample: 10,
-
-          MelodyNoteDensityPreset: 'constant',
-          MelodyNoteDensityValue: density,
-          MelodyTemperature: temp,
-
-          BassNoteDensityPreset: 'constant',
-          BassNoteDensityValue: density,
-          BassTemperature: temp,
-
-          UseDrumFillIn: false,
+          MelodyNoteDensity: density,
+          BassNoteDensity: density,
+          UseDrumFillin: false,
         }),
       });
       const data = await response.json();
@@ -227,7 +217,7 @@ export default class NeuralDAW {
       const response = await this.server.postVarianceIntegration(id, temp, dense);
       console.log(`Data loaded: single [ id: ${id}, melodyId: ${melodyId}, dense: ${dense}, temp: ${temp} ]`);
 
-      // console.log(response);
+      console.log(response);
       const data = response.Data[melodyId];
       const bassNotes = dataToNotes(
         data.Bass.Notes,
