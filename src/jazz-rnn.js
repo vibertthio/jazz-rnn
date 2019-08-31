@@ -19,9 +19,8 @@ export default class NeuralDAW {
   initConstants() {
     // const ServerURL = 'https://developer.ailabs.tw/ai-music-jazzrnn-demo/api/';
     // const ServerURL = 'http://140.113.225.164:5000/api/';
-    // const ServerURL = "http://musical.citi.sinica.edu.tw/jazzrnn/api/";
-    const ServerURL = "http://musicai.citi.sinica.edu.tw/jazzrnn/api/";
     // const ServerURL = "http://140.109.16.227:9487/api/";
+    const ServerURL = "http://musicai.citi.sinica.edu.tw/jazzrnn/api/";
 
     const APIS = {
       META: "getStaticMeta",
